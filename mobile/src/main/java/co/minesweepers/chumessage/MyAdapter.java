@@ -10,30 +10,26 @@ import java.util.ArrayList;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     private ArrayList<String> mDataset;
+    private Callback mListener;
 
-    // Provide a suitable constructor (depends on the kind of dataset)
-    public MyAdapter() {
+    public MyAdapter(Callback listener) {
         mDataset = new ArrayList<>();
+        mListener = listener;
     }
 
-    // Create new views (invoked by the layout manager)
     @Override
     public MyAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.my_text_view, parent, false);
 
-        return new ViewHolder(view);
+        return new ViewHolder(view, mListener);
     }
 
-    // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        // - get element from your dataset at this position
-        // - replace the contents of the view with that element
         holder.mTextView.setText(mDataset.get(position));
     }
 
-    // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
         return mDataset.size();
@@ -44,12 +40,26 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         notifyDataSetChanged();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        // each data item is just a string in this case
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView mTextView;
-        public ViewHolder(View view) {
+        private Callback mListener;
+
+        public ViewHolder(View view, Callback listener) {
             super(view);
+            mListener = listener;
             mTextView = (TextView) view.findViewById(R.id.textTitle);
+            mTextView.setOnClickListener(this);
         }
+
+        @Override
+        public void onClick(View v) {
+            if (mListener != null) {
+                mListener.onClick(mTextView.getText().toString());
+            }
+        }
+    }
+
+    public interface Callback {
+        void onClick(String text);
     }
 }
