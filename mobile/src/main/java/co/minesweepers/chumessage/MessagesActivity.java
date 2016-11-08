@@ -9,11 +9,15 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 public class MessagesActivity extends AppCompatActivity implements View.OnClickListener{
@@ -63,21 +67,20 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
 	@Override
 	public void onClick(View v) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(MessagesActivity.this);
-		builder.setTitle("New message");
+		String number = getNumber();
+		builder.setTitle("Enter new message for " + number);
 
-// Set up the input
 		final EditText input = new EditText(MessagesActivity.this);
-// Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
-		input.setInputType(InputType.TYPE_CLASS_TEXT);
+		input.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
 		builder.setView(input);
 
-// Set up the buttons
 		builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				mAdapter.add(input.getText().toString());
 			}
 		});
+
 		builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -86,5 +89,25 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
 		});
 
 		builder.show();
+	}
+
+	private String getNumber() {
+		BufferedReader reader = null;
+		try {
+			reader = new BufferedReader(new InputStreamReader(getAssets().open("number")));
+			return reader.readLine(); // there is just one line in the file
+		} catch (IOException e) {
+			Log.e("MessagesActivity", "Create a file name number in assets folder and put in a number of format +13334445555");
+		} finally {
+			if (reader != null) {
+				try {
+					reader.close();
+				} catch (IOException e) {
+					//log the exception
+				}
+			}
+		}
+
+		return null;
 	}
 }
