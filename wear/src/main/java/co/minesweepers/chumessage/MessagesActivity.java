@@ -2,63 +2,42 @@ package co.minesweepers.chumessage;
 
 import android.os.Bundle;
 import android.support.wearable.activity.WearableActivity;
-import android.support.wearable.view.BoxInsetLayout;
-import android.view.View;
-import android.widget.TextView;
+import android.support.wearable.view.WearableListView;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
+import co.minesweepers.chumessage.adapters.Adapter;
 
-public class MessagesActivity extends WearableActivity {
+public class MessagesActivity extends WearableActivity implements WearableListView.ClickListener{
 
-	private static final SimpleDateFormat AMBIENT_DATE_FORMAT =
-			new SimpleDateFormat("HH:mm", Locale.US);
+    // Sample dataset for the list
+    String[] elements = { "List Item 1", "List Item 2", "List Item 2" , "List Item 2" ,"List Item 2"};
 
-	private BoxInsetLayout mContainerView;
-	private TextView mTextView;
-	private TextView mClockView;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_messages);
-		setAmbientEnabled();
 
-		mContainerView = (BoxInsetLayout) findViewById(R.id.container);
-		mTextView = (TextView) findViewById(R.id.text);
-		mClockView = (TextView) findViewById(R.id.clock);
-	}
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_messages);
 
-	@Override
-	public void onEnterAmbient(Bundle ambientDetails) {
-		super.onEnterAmbient(ambientDetails);
-		updateDisplay();
-	}
+        // Get the list component from the layout of the activity
+        WearableListView listView =
+        (WearableListView) findViewById(R.id.wearable_list);
 
-	@Override
-	public void onUpdateAmbient() {
-		super.onUpdateAmbient();
-		updateDisplay();
-	}
+        // Assign an adapter to the list
+        listView.setAdapter(new Adapter(this, elements));
 
-	@Override
-	public void onExitAmbient() {
-		updateDisplay();
-		super.onExitAmbient();
-	}
+        // Set a click listener
+        listView.setClickListener(this);
+     }
 
-	private void updateDisplay() {
-		if (isAmbient()) {
-			mContainerView.setBackgroundColor(getResources().getColor(android.R.color.black));
-			mTextView.setTextColor(getResources().getColor(android.R.color.white));
-			mClockView.setVisibility(View.VISIBLE);
+    // WearableListView click listener
+    @Override
+    public void onClick(WearableListView.ViewHolder v) {
+        Integer tag = (Integer) v.itemView.getTag();
+        // use this data to complete some action ...
+        }
 
-			mClockView.setText(AMBIENT_DATE_FORMAT.format(new Date()));
-		} else {
-			mContainerView.setBackground(null);
-			mTextView.setTextColor(getResources().getColor(android.R.color.black));
-			mClockView.setVisibility(View.GONE);
-		}
-	}
+    @Override
+    public void onTopEmptyRegionClick() {
+
+    }
 }
